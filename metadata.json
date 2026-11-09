@@ -1,0 +1,8 @@
+{
+  "name": "Age of Warriors",
+  "description": "Epic historical strategy battle game where warriors clash simultaneously across evolving eras from Stone Age to Modern War.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

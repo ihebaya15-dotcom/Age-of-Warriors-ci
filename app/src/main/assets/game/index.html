@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Age of Warriors</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- CANVAS -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- TOP HUD -->
+        <div id="top-hud">
+            <div class="hud-left">
+                <div class="era-badge" id="hud-era">Stone Age</div>
+                <div class="resource-pill weather-pill" id="hud-weather" title="Weather Condition">🍃 Leaves</div>
+                <div class="resource-pill">
+                    <span class="coin-icon">🪙</span>
+                    <span id="hud-coins">50</span>
+                </div>
+                <div class="resource-pill">
+                    <span class="gem-icon">💎</span>
+                    <span id="hud-gems">10</span>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <button class="hud-btn" id="btn-settings" title="Settings (الإعدادات)">⚙️</button>
+                <button class="hud-btn" id="btn-stats" title="Session Stats">📊</button>
+                <button class="hud-btn" id="btn-speed">1x</button>
+                <button class="hud-btn active" id="btn-sound" title="Audio">🔊</button>
+                <button class="hud-btn" id="btn-pause">⏸️</button>
+            </div>
+        </div>
+
+        <!-- MAIN MENU BEFORE BATTLE (We Are Warriors Pre-Battle Screen) -->
+        <div id="main-menu-overlay" class="main-menu-overlay">
+            <div class="main-menu-content">
+                <!-- ERA TITLE BANNER -->
+                <div class="menu-header-banner">
+                    <div class="menu-era-sub" id="menu-era-subtitle">TIMELINE BATTLEFIELD</div>
+                    <div class="menu-era-title" id="menu-era-name">Stone Age</div>
+                </div>
+
+                <!-- PERSISTENT SESSION STATS CARD -->
+                <div class="session-stats-card" id="session-stats-card">
+                    <div class="stats-header">
+                        <span class="stats-icon">📊</span>
+                        <div class="stats-title-col">
+                            <span class="stats-main-title">Session Stats</span>
+                            <span class="stats-sub-title">إحصائيات الجلسة • Warriors Record</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <!-- Total Enemies Defeated -->
+                        <div class="stat-box primary">
+                            <div class="stat-badge-icon">💀</div>
+                            <div class="stat-num" id="stat-enemies-defeated">0</div>
+                            <div class="stat-label">Enemies Defeated</div>
+                            <div class="stat-label-ar">الأعداء المهزومين</div>
+                        </div>
+
+                        <!-- Highest Era Reached -->
+                        <div class="stat-box accent">
+                            <div class="stat-badge-icon" id="stat-era-icon">🏛️</div>
+                            <div class="stat-num" id="stat-highest-era">Stone Age</div>
+                            <div class="stat-label">Highest Era</div>
+                            <div class="stat-label-ar">أعلى عصر تم الوصول إليه</div>
+                        </div>
+
+                        <!-- Total Victories -->
+                        <div class="stat-box">
+                            <div class="stat-badge-icon">🏆</div>
+                            <div class="stat-num" id="stat-victories">0</div>
+                            <div class="stat-label">Victories</div>
+                            <div class="stat-label-ar">انتصارات القلعة</div>
+                        </div>
+
+                        <!-- Battles Played -->
+                        <div class="stat-box">
+                            <div class="stat-badge-icon">⚔️</div>
+                            <div class="stat-num" id="stat-battles">0</div>
+                            <div class="stat-label">Battles Fought</div>
+                            <div class="stat-label-ar">معارك خاضها الجيش</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- START BATTLE CTA BUTTON (Authentic We Are Warriors "Bataille" Button) -->
+                <button class="main-battle-btn" id="btn-start-battle">
+                    <span class="battle-btn-icon">⚔️</span>
+                    <span class="battle-btn-text">BATTLE</span>
+                    <span class="battle-btn-sub">ابدأ المعركة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- BASE HEALTH TOP BARS (As shown in screenshot) -->
+        <div id="base-status-bar">
+            <div class="base-hp-badge player-base">
+                <span class="base-hp-val" id="player-base-hp-text">500</span>
+                <div class="base-hp-mini-bar"><div class="base-hp-mini-fill" id="player-base-hp-fill"></div></div>
+            </div>
+            <div class="base-hp-badge enemy-base">
+                <span class="base-hp-val" id="enemy-base-hp-text">500</span>
+                <div class="base-hp-mini-bar"><div class="base-hp-mini-fill" id="enemy-base-hp-fill"></div></div>
+            </div>
+        </div>
+
+        <!-- TACTICAL PAUSE ON-DEMAND BANNER -->
+        <div id="tactical-pause-banner" class="tactical-pause-banner hidden">
+            <div class="pause-badge-content">
+                <div class="pause-icon-pulse">⏸️</div>
+                <div class="pause-text-col">
+                    <span class="pause-main-title">تحليل تكتيكي • Tactical Pause</span>
+                    <span class="pause-sub-title">انقر على الساحة للاستئناف • Tap board to resume</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDE ACTIONS -->
+        <div id="side-actions">
+            <button class="action-chip-btn upgrade" id="btn-open-upgrades">
+                <span>⚡</span> Upgrades
+            </button>
+            <button class="action-chip-btn evolve" id="btn-open-evolve">
+                <span>🏛️</span> Evolve
+            </button>
+            <button class="action-chip-btn dungeon" id="btn-open-dungeon">
+                <span>💀</span> Dungeon
+            </button>
+            <button class="action-chip-btn free-food" id="btn-free-food">
+                <span>🍖</span> +25 Food (Ad)
+            </button>
+        </div>
+
+        <!-- TACTICAL BOMB / AIR STRIKE BUTTON (From Screenshot) -->
+        <button class="airstrike-btn ready" id="btn-air-strike" title="Tactical Bomb Strike">
+            <div class="airstrike-icon">💣</div>
+            <div class="airstrike-cooldown" id="airstrike-cd">READY</div>
+        </button>
+
+        <!-- BOTTOM HUD (FOOD & UNIT SPAWNER) -->
+        <div id="bottom-hud">
+            <div class="food-gauge-container">
+                <div class="food-label">
+                    <span>🍖</span>
+                    <span id="food-text">0 / 20</span>
+                </div>
+                <div class="food-progress-bar-bg">
+                    <div class="food-progress-bar-fill" id="food-fill"></div>
+                </div>
+                <div class="food-rate-tag" id="food-rate">+1.2/s</div>
+            </div>
+
+            <div class="units-dock">
+                <!-- Unit 0 -->
+                <div class="unit-card" id="unit-card-0">
+                    <div class="unit-icon-render" id="unit-icon-0">🪓</div>
+                    <div class="unit-name" id="unit-name-0">Clubman</div>
+                    <div class="unit-cost">
+                        <span>🍖</span>
+                        <span id="unit-cost-0">3</span>
+                    </div>
+                    <div class="cooldown-overlay" id="unit-cd-0">0.0s</div>
+                </div>
+
+                <!-- Unit 1 -->
+                <div class="unit-card" id="unit-card-1">
+                    <div class="unit-icon-render" id="unit-icon-1">🪨</div>
+                    <div class="unit-name" id="unit-name-1">Rock Thrower</div>
+                    <div class="unit-cost">
+                        <span>🍖</span>
+                        <span id="unit-cost-1">5</span>
+                    </div>
+                    <div class="cooldown-overlay" id="unit-cd-1">0.0s</div>
+                </div>
+
+                <!-- Unit 2 -->
+                <div class="unit-card" id="unit-card-2">
+                    <div class="unit-icon-render" id="unit-icon-2">🦖</div>
+                    <div class="unit-name" id="unit-name-2">Dino Rider</div>
+                    <div class="unit-cost">
+                        <span>🍖</span>
+                        <span id="unit-cost-2">10</span>
+                    </div>
+                    <div class="cooldown-overlay" id="unit-cd-2">0.0s</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UPGRADES MODAL -->
+        <div class="modal-backdrop" id="modal-upgrades">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">Base & Food Upgrades</div>
+                    <button class="modal-close-btn" id="close-upgrades">✕</button>
+                </div>
+                <div class="upgrade-list">
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <h4 id="lbl-food-rate-lvl">Food Generator (Lvl 1)</h4>
+                            <p id="lbl-food-rate-desc">Current: +1.2 food/sec</p>
+                        </div>
+                        <button class="upgrade-btn" id="btn-upgrade-food-rate">
+                            🪙 <span id="cost-food-rate">25</span>
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <h4 id="lbl-food-cap-lvl">Food Storage (Lvl 1)</h4>
+                            <p id="lbl-food-cap-desc">Current capacity: 20 food</p>
+                        </div>
+                        <button class="upgrade-btn" id="btn-upgrade-food-cap">
+                            🪙 <span id="cost-food-cap">30</span>
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <h4 id="lbl-base-hp-lvl">Base Fortification (Lvl 1)</h4>
+                            <p id="lbl-base-hp-desc">Current HP: 500</p>
+                        </div>
+                        <button class="upgrade-btn" id="btn-upgrade-base-hp">
+                            🪙 <span id="cost-base-hp">40</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVOLVE MODAL -->
+        <div class="modal-backdrop" id="modal-evolve">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">Era Evolution</div>
+                    <button class="modal-close-btn" id="close-evolve">✕</button>
+                </div>
+                <div class="evolution-preview">
+                    <h3 id="evolve-next-title">Next: Bronze Age</h3>
+                    <p id="evolve-next-desc">Unlock Spearmen, Archers, and War Chariots! Boost base durability and permanently increase battle strength.</p>
+                </div>
+                <button class="evolve-action-btn" id="btn-confirm-evolve">
+                    🏛️ Evolve Era (🪙 <span id="cost-evolve">250</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- DUNGEON MODAL -->
+        <div class="modal-backdrop" id="modal-dungeon">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">Boss Dungeon Challenge</div>
+                    <button class="modal-close-btn" id="close-dungeon">✕</button>
+                </div>
+                <div class="evolution-preview">
+                    <h3 style="color:#c084fc;">Colossal Titan Boss</h3>
+                    <p>Survive the relentless onslaught to earn massive 💎 Gem rewards!</p>
+                    <p style="margin-top:8px; font-weight:bold; color:#fde047;">Keys Available: <span id="dungeon-keys-count">3</span> / 3</p>
+                </div>
+                <button class="evolve-action-btn" id="btn-start-dungeon" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">
+                    ⚔️ Enter Dungeon (1 Key)
+                </button>
+                <button class="ad-double-btn" id="btn-ad-key" style="margin-top:4px;">
+                    📺 Watch Ad for +1 Dungeon Key
+                </button>
+            </div>
+        </div>
+
+        <!-- GAME OVER MODAL -->
+        <div class="modal-backdrop" id="modal-gameover">
+            <div class="modal-dialog gameover-dialog">
+                <div class="gameover-title" id="gameover-title">VICTORY!</div>
+                <p id="gameover-subtitle">Enemy base has fallen!</p>
+                <div class="reward-box">
+                    <span>Reward:</span>
+                    <span>🪙 +<span id="gameover-coins">50</span></span>
+                </div>
+                <button class="ad-double-btn" id="btn-double-gold">
+                    📺 Double Coins! (+<span id="double-amount">50</span> 🪙)
+                </button>
+                <div class="gameover-actions-row">
+                    <button class="continue-btn" id="btn-continue-battle">
+                        ⚔️ Battle Again
+                    </button>
+                    <button class="menu-return-btn" id="btn-menu-return">
+                        🏠 Main Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SESSION STATS POPUP MODAL (For viewing stats during battle via HUD) -->
+        <div class="modal-backdrop" id="modal-stats">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">📊 Session Stats</div>
+                    <button class="modal-close-btn" id="close-stats">✕</button>
+                </div>
+                <div class="session-stats-modal-body">
+                    <div class="stats-grid">
+                        <div class="stat-box primary">
+                            <div class="stat-badge-icon">💀</div>
+                            <div class="stat-num" id="modal-stat-enemies-defeated">0</div>
+                            <div class="stat-label">Enemies Defeated</div>
+                            <div class="stat-label-ar">الأعداء المهزومين</div>
+                        </div>
+                        <div class="stat-box accent">
+                            <div class="stat-badge-icon" id="modal-stat-era-icon">🏛️</div>
+                            <div class="stat-num" id="modal-stat-highest-era">Stone Age</div>
+                            <div class="stat-label">Highest Era</div>
+                            <div class="stat-label-ar">أعلى عصر تم الوصول إليه</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-badge-icon">🏆</div>
+                            <div class="stat-num" id="modal-stat-victories">0</div>
+                            <div class="stat-label">Victories</div>
+                            <div class="stat-label-ar">انتصارات القلعة</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-badge-icon">⚔️</div>
+                            <div class="stat-num" id="modal-stat-battles">0</div>
+                            <div class="stat-label">Battles Fought</div>
+                            <div class="stat-label-ar">معارك خاضها الجيش</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS MODAL (الإعدادات) -->
+        <div class="modal-backdrop" id="modal-settings">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">⚙️ Game Settings (الإعدادات)</div>
+                    <button class="modal-close-btn" id="close-settings">✕</button>
+                </div>
+                <div class="settings-modal-body">
+                    <!-- Music Setting -->
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <div class="settings-label">🎵 Background Music</div>
+                            <div class="settings-sub">الموسيقى التصويرية التفاعلية لكل عصر</div>
+                        </div>
+                        <button class="toggle-switch-btn active" id="btn-toggle-music">ON</button>
+                    </div>
+
+                    <!-- Music Volume Slider -->
+                    <div class="settings-slider-row">
+                        <div class="settings-slider-label">
+                            <span>🔊 Music Volume (مستوى صوت الموسيقى)</span>
+                            <span id="music-volume-display">65%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="65" id="slider-music-volume" class="settings-range">
+                    </div>
+
+                    <!-- Sound Effects Setting -->
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <div class="settings-label">💥 Sound Effects (SFX)</div>
+                            <div class="settings-sub">المؤثرات الصوتية والضربات والانفجارات</div>
+                        </div>
+                        <button class="toggle-switch-btn active" id="btn-toggle-sfx">ON</button>
+                    </div>
+
+                    <!-- Haptic Vibration Setting -->
+                    <div class="settings-row">
+                        <div class="settings-info">
+                            <div class="settings-label">📳 Haptic Vibration</div>
+                            <div class="settings-sub">اهتزاز الهاتف أثناء المعارك</div>
+                        </div>
+                        <button class="toggle-switch-btn active" id="btn-toggle-haptic">ON</button>
+                    </div>
+
+                    <!-- Current Era Theme Info -->
+                    <div class="settings-era-info-box">
+                        <span class="settings-era-icon" id="settings-current-era-icon">🏛️</span>
+                        <div>
+                            <div class="settings-era-title" id="settings-current-era-title">Soundtrack: Stone Age Drums</div>
+                            <div class="settings-era-sub" id="settings-current-era-sub">طبول حربية قبلية ملحمية تتغير تلقائياً مع تطور العصر</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

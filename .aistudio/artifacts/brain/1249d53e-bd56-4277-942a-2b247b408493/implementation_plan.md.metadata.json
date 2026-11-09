@@ -1,0 +1,6 @@
+{
+  "summary":  "خطة معمارية وتنفيذية شاملة للعبة \"We Are Warriors\" بنظام بدون محركات ألعاب (No-Engine Architecture)، تعتمد على واجهة Android WebView مسرعة عتادياً ومربوطة بجسر AndroidBridge للتواصل مع كود JavaScript النقي ومحرك الرسم HTML5 Canvas، مع نظام العصور الأربعة، والـ FSM، واقتصاد الغذاء، ونظام إعلانات المكافآت، والتخزين الدائم عبر SharedPreferences.",
+  "updatedAt":  "2026-11-08T22:02:56.438223512Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
